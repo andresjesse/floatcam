@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
+const os = require("os");
 function createMainWindow() {
     const win = new electron_1.BrowserWindow({
         width: 800,
@@ -55,18 +56,21 @@ function createCameraWindow() {
     return win;
 }
 electron_1.app.whenReady().then(async () => {
-    const camAllowed = await electron_1.systemPreferences
-        .askForMediaAccess("camera")
-        .then(async (access) => {
-        if (!access) {
-            new electron_1.Notification({
-                title: "Camera Access",
-                body: "Camera access is required to use this app",
-            }).show();
-            return false;
-        }
-        return true;
-    });
+    let camAllowed = true;
+    if (os.platform() === "darwin") {
+        camAllowed = await electron_1.systemPreferences
+            .askForMediaAccess("camera")
+            .then(async (access) => {
+            if (!access) {
+                new electron_1.Notification({
+                    title: "Camera Access",
+                    body: "Camera access is required to use this app",
+                }).show();
+                return false;
+            }
+            return true;
+        });
+    }
     if (!camAllowed) {
         electron_1.app.quit();
         return;

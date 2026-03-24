@@ -1,5 +1,12 @@
 import path from "path";
-import { app, BrowserWindow, ipcMain, Notification, systemPreferences } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Notification,
+  systemPreferences,
+} from "electron";
+const os = require("os");
 
 interface WindowMessage {
   type: string;
@@ -65,18 +72,22 @@ function createCameraWindow(): BrowserWindow {
 }
 
 app.whenReady().then(async () => {
-  const camAllowed = await systemPreferences
-    .askForMediaAccess("camera")
-    .then(async (access: boolean) => {
-      if (!access) {
-        new Notification({
-          title: "Camera Access",
-          body: "Camera access is required to use this app",
-        }).show();
-        return false;
-      }
-      return true;
-    });
+  let camAllowed = true;
+
+  if (os.platform() === "darwin") {
+    camAllowed = await systemPreferences
+      .askForMediaAccess("camera")
+      .then(async (access: boolean) => {
+        if (!access) {
+          new Notification({
+            title: "Camera Access",
+            body: "Camera access is required to use this app",
+          }).show();
+          return false;
+        }
+        return true;
+      });
+  }
 
   if (!camAllowed) {
     app.quit();
