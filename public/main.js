@@ -1,16 +1,17 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
+const config_1 = require("../src/schemas/config");
 const os = require("os");
+const fs = require("fs").promises;
+const path = require("path");
 function createMainWindow() {
     const win = new electron_1.BrowserWindow({
         width: 800,
         height: 700,
         maximizable: false,
+        minimizable: true,
+        alwaysOnTop: false,
         resizable: false,
         transparent: true,
         frame: false,
@@ -19,17 +20,22 @@ function createMainWindow() {
         autoHideMenuBar: true,
         fullscreenable: false,
         webPreferences: {
-            preload: path_1.default.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preload.js"),
             nodeIntegration: true,
             contextIsolation: true,
         },
     });
     const loadURL = process.env.NODE_ENV === "development"
         ? "http://localhost:3000"
-        : `file://${path_1.default.join(__dirname, "../build/index.html")}`;
+        : `file://${path.join(__dirname, "../build/index.html")}`;
     win.loadURL(loadURL);
     win.removeMenu();
     win.setMenuBarVisibility(false);
+    win.on("show", () => {
+        setTimeout(() => {
+            win.minimize();
+        }, 500); // A 50ms buffer often solves OS-level race conditions
+    });
     return win;
 }
 function createCameraWindow() {
@@ -47,12 +53,12 @@ function createCameraWindow() {
         alwaysOnTop: true,
         fullscreenable: false,
         webPreferences: {
-            preload: path_1.default.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preload.js"),
             contextIsolation: true,
             nodeIntegration: false,
         },
     });
-    win.loadFile(path_1.default.join(__dirname, "cam.html"));
+    win.loadFile(path.join(__dirname, "cam.html"));
     return win;
 }
 electron_1.app.whenReady().then(async () => {
@@ -114,6 +120,47 @@ electron_1.app.whenReady().then(async () => {
             createMainWindow();
         }
     });
+});
+electron_1.ipcMain.on("log-to-main", (_, msg) => {
+    console.log("[Renderer Log]:", msg);
+});
+electron_1.ipcMain.handle("get-config-file", async () => {
+    const filePath = path.join(electron_1.app.getPath("home"), ".floatcam-config.json");
+    try {
+        console.log("Reading config file:", filePath);
+        const fileContent = await fs.readFile(filePath, "utf-8");
+        console.log("File content read:", fileContent);
+        const data = config_1.ConfigSchema.parse(JSON.parse(fileContent));
+        console.log("File content parsed:", data);
+        return {
+            read: true,
+            data,
+        };
+    }
+    catch (error) {
+        console.error(error);
+        return { read: false };
+    }
+});
+electron_1.ipcMain.handle("set-config-file", async (_event, attribute, value) => {
+    const filePath = path.join(electron_1.app.getPath("home"), ".floatcam-config.json");
+    try {
+        const fileContent = await fs.readFile(filePath, "utf-8");
+        console.log("File content read:", fileContent);
+        let data = config_1.ConfigSchema.parse(JSON.parse(fileContent));
+        data[attribute] = value;
+        const stringData = JSON.stringify(data, null, 2);
+        await fs.writeFile(filePath, stringData, "utf-8");
+        console.log("File content written:", stringData);
+        return { success: true };
+    }
+    catch (error) {
+        console.error("Failed to save config:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown error",
+        };
+    }
 });
 electron_1.app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {

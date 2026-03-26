@@ -5,7 +5,10 @@ interface WindowMessage {
 
 interface ElectronAPI {
   sendSync: (chan: string, message: unknown) => boolean;
-  onMessageReceived: (chan: string, callback: (event: unknown, message: WindowMessage) => void) => void;
+  onMessageReceived: (
+    chan: string,
+    callback: (event: unknown, message: WindowMessage) => void,
+  ) => void;
 }
 
 declare global {

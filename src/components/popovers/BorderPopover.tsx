@@ -22,6 +22,8 @@ export default function BorderPopover() {
       type: "set-border-width",
       payload: value,
     });
+
+    electronAPI.saveConfig("set-border-width", value);
   };
 
   const handleStyleChange = (value: string): void => {
@@ -29,13 +31,19 @@ export default function BorderPopover() {
       type: "set-border-style",
       payload: value,
     });
+
+    electronAPI.saveConfig("set-border-style", value);
   };
 
-  const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleColorChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
     electronAPI.sendSync("shared-window-channel", {
       type: "set-border-color",
       payload: event.target.value,
     });
+
+    electronAPI.saveConfig("set-border-color", event.target.value);
   };
 
   return (
@@ -43,7 +51,14 @@ export default function BorderPopover() {
       <div className="popover-title">Border</div>
 
       <div style={{ marginBottom: "16px" }}>
-        <label style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "12px", marginBottom: "6px", display: "block" }}>
+        <label
+          style={{
+            color: "rgba(255, 255, 255, 0.7)",
+            fontSize: "12px",
+            marginBottom: "6px",
+            display: "block",
+          }}
+        >
           Width
         </label>
         <select
@@ -60,7 +75,14 @@ export default function BorderPopover() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <label style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "12px", marginBottom: "6px", display: "block" }}>
+        <label
+          style={{
+            color: "rgba(255, 255, 255, 0.7)",
+            fontSize: "12px",
+            marginBottom: "6px",
+            display: "block",
+          }}
+        >
           Style
         </label>
         <select
@@ -77,7 +99,14 @@ export default function BorderPopover() {
       </div>
 
       <div>
-        <label style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "12px", marginBottom: "6px", display: "block" }}>
+        <label
+          style={{
+            color: "rgba(255, 255, 255, 0.7)",
+            fontSize: "12px",
+            marginBottom: "6px",
+            display: "block",
+          }}
+        >
           Color
         </label>
         <input

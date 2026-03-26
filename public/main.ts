@@ -1,4 +1,3 @@
-import path from "path";
 import {
   app,
   BrowserWindow,
@@ -6,7 +5,11 @@ import {
   Notification,
   systemPreferences,
 } from "electron";
+import { ConfigSchema } from "../src/schemas/config";
+
 const os = require("os");
+const fs = require("fs").promises;
+const path = require("path");
 
 interface WindowMessage {
   type: string;
@@ -22,6 +25,8 @@ function createMainWindow(): BrowserWindow {
     width: 800,
     height: 700,
     maximizable: false,
+    minimizable: true,
+    alwaysOnTop: false,
     resizable: false,
     transparent: true,
     frame: false,
@@ -44,6 +49,13 @@ function createMainWindow(): BrowserWindow {
   win.loadURL(loadURL);
   win.removeMenu();
   win.setMenuBarVisibility(false);
+
+  win.on("show", () => {
+    setTimeout(() => {
+      win.minimize();
+    }, 500); // A 50ms buffer often solves OS-level race conditions
+  });
+
   return win;
 }
 
@@ -140,6 +152,62 @@ app.whenReady().then(async () => {
       createMainWindow();
     }
   });
+});
+
+ipcMain.on("log-to-main", (_, msg) => {
+  console.log("[Renderer Log]:", msg);
+});
+
+ipcMain.handle("get-config-file", async () => {
+  const filePath = path.join(app.getPath("home"), ".floatcam-config.json");
+
+  try {
+    console.log("Reading config file:", filePath);
+
+    const fileContent = await fs.readFile(filePath, "utf-8");
+
+    console.log("File content read:", fileContent);
+
+    const data = ConfigSchema.parse(JSON.parse(fileContent));
+
+    console.log("File content parsed:", data);
+
+    return {
+      read: true,
+      data,
+    };
+  } catch (error) {
+    console.error(error);
+    return { read: false };
+  }
+});
+
+ipcMain.handle("set-config-file", async (_event, attribute, value) => {
+  const filePath = path.join(app.getPath("home"), ".floatcam-config.json");
+
+  try {
+    const fileContent = await fs.readFile(filePath, "utf-8");
+
+    console.log("File content read:", fileContent);
+
+    let data = ConfigSchema.parse(JSON.parse(fileContent));
+
+    data[attribute as keyof ConfigSchema] = value;
+
+    const stringData = JSON.stringify(data, null, 2);
+
+    await fs.writeFile(filePath, stringData, "utf-8");
+
+    console.log("File content written:", stringData);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to save config:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 });
 
 app.on("window-all-closed", () => {

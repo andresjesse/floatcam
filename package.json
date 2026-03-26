@@ -18,7 +18,8 @@
     "react-bootstrap": "^2.9.2",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^3.5.1"
+    "web-vitals": "^3.5.1",
+    "zod": "^4.3.6"
   },
   "homepage": "./",
   "scripts": {
@@ -26,7 +27,7 @@
     "forge": "electron-forge start",
     "desktop": "npm run build:electron && electron .",
     "build": "react-scripts build",
-    "build:electron": "tsc public/*.ts --outDir public --skipLibCheck --esModuleInterop --module commonjs --target ES2020 --moduleResolution node --resolveJsonModule",
+    "build:electron": "tsc public/*.ts --outDir . --skipLibCheck --esModuleInterop --module commonjs --target ES2020 --moduleResolution node --resolveJsonModule",
     "prebuild": "npm run build:electron",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",

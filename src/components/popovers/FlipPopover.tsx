@@ -23,6 +23,8 @@ export default function FlipPopover() {
       type: "set-camera-mirror",
       payload: style,
     });
+
+    electronAPI.saveConfig("set-camera-mirror", JSON.stringify(style));
   };
 
   return (

@@ -18,6 +18,8 @@ export default function SizePopover() {
       type: "set-camera-resolution",
       payload: { width: size, height: size },
     });
+
+    electronAPI.saveConfig("set-camera-resolution", size);
   };
 
   return (

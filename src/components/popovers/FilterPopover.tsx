@@ -27,7 +27,7 @@ export default function FilterPopover() {
 
     if (filter === "drop-shadow(8px 8px 10px %s)") {
       const videoBorderColorElement = document.getElementById(
-        "video-border-color"
+        "video-border-color",
       ) as HTMLInputElement;
       const videoBorderColor = videoBorderColorElement?.value || "#000000";
       filter = `drop-shadow(8px 8px 10px ${videoBorderColor})`;
@@ -40,6 +40,8 @@ export default function FilterPopover() {
       type: "set-video-filter",
       payload: style,
     });
+
+    electronAPI.saveConfig("set-video-filter", JSON.stringify(style));
   };
 
   return (

@@ -31,6 +31,8 @@ export default function ShapePopover() {
       type: "set-camera-shape",
       payload: style,
     });
+
+    electronAPI.saveConfig("set-camera-shape", JSON.stringify(style));
   };
 
   return (
