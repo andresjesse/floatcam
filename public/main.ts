@@ -50,12 +50,6 @@ function createMainWindow(): BrowserWindow {
   win.removeMenu();
   win.setMenuBarVisibility(false);
 
-  win.on("show", () => {
-    setTimeout(() => {
-      win.minimize();
-    }, 500); // A 50ms buffer often solves OS-level race conditions
-  });
-
   return win;
 }
 
@@ -145,6 +139,12 @@ app.whenReady().then(async () => {
     }
 
     event.returnValue = true;
+  });
+
+  ipcMain.on("hide-config-window", () => {
+    if (mainWindow) {
+      mainWindow.hide();
+    }
   });
 
   app.on("activate", () => {

@@ -9,6 +9,7 @@ export interface ElectronAPI {
   ) => void;
   readConfig(): Promise<{ read: boolean; data?: ConfigSchema }>;
   saveConfig: (attribute: keyof ConfigSchema, value: string) => Promise<void>;
+  hideConfigWindow: () => void;
 }
 
 declare global {

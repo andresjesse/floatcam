@@ -7,4 +7,5 @@ electron_1.contextBridge.exposeInMainWorld("electronAPI", {
     onMessageReceived: (chan, callback) => electron_1.ipcRenderer.on(chan, callback),
     readConfig: () => electron_1.ipcRenderer.invoke("get-config-file"),
     saveConfig: (attribute, value) => electron_1.ipcRenderer.invoke("set-config-file", attribute, value),
+    hideConfigWindow: () => electron_1.ipcRenderer.send("hide-config-window"),
 });

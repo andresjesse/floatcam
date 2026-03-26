@@ -8,6 +8,7 @@ import {
   Square,
   RotateCcw,
   X,
+  PanelBottomClose,
 } from "lucide-react";
 import CameraPopover from "./popovers/CameraPopover";
 import SizePopover from "./popovers/SizePopover";
@@ -19,14 +20,24 @@ import ConfirmDialog from "./ConfirmDialog";
 
 const { electronAPI } = window;
 
-type PopoverType = "camera" | "size" | "flip" | "shape" | "filter" | "border" | null;
+type PopoverType =
+  | "camera"
+  | "size"
+  | "flip"
+  | "shape"
+  | "filter"
+  | "border"
+  | null;
 
 export default function Sidebar() {
   const [activePopover, setActivePopover] = useState<PopoverType>(null);
   const [popoverPosition, setPopoverPosition] = useState<number>(0);
   const [showExitDialog, setShowExitDialog] = useState<boolean>(false);
 
-  const togglePopover = (popover: PopoverType, event: React.MouseEvent<HTMLButtonElement>) => {
+  const togglePopover = (
+    popover: PopoverType,
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     if (activePopover === popover) {
       setActivePopover(null);
     } else {
@@ -46,15 +57,15 @@ export default function Sidebar() {
         calculatedTop = rect.top;
       } else if (spaceAbove >= popoverMaxHeight + paddingFromEdge) {
         // Not enough space below but enough above - align to fit above
-        calculatedTop = Math.max(paddingFromEdge, rect.bottom - popoverMaxHeight);
+        calculatedTop = Math.max(
+          paddingFromEdge,
+          rect.bottom - popoverMaxHeight,
+        );
       } else {
         // Limited space both ways - position to maximize visible area
         calculatedTop = Math.max(
           paddingFromEdge,
-          Math.min(
-            rect.top,
-            windowHeight - popoverMaxHeight - paddingFromEdge
-          )
+          Math.min(rect.top, windowHeight - popoverMaxHeight - paddingFromEdge),
         );
       }
 
@@ -66,6 +77,10 @@ export default function Sidebar() {
   const handleReset = () => {
     // Reset all settings
     window.location.reload();
+  };
+
+  const handleHideConfigWindow = () => {
+    electronAPI.hideConfigWindow();
   };
 
   const handleExit = () => {
@@ -119,8 +134,17 @@ export default function Sidebar() {
         >
           <div style={{ display: "flex", gap: "2px" }}>
             <Triangle size={12} />
-            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <div style={{ width: "12px", height: "12px", borderRadius: "50%", border: "2px solid white" }} />
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "2px" }}
+            >
+              <div
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  borderRadius: "50%",
+                  border: "2px solid white",
+                }}
+              />
               <Square size={12} />
             </div>
           </div>
@@ -173,6 +197,15 @@ export default function Sidebar() {
         <RotateCcw />
       </button>
 
+      {/* Hide Config Window */}
+      <button
+        className="sidebar-button"
+        onClick={handleHideConfigWindow}
+        title="Hide Config Window"
+      >
+        <PanelBottomClose />
+      </button>
+
       {/* Exit */}
       <button
         className="sidebar-button"
@@ -184,32 +217,68 @@ export default function Sidebar() {
 
       {/* Render active popover with calculated position */}
       {activePopover === "camera" && (
-        <div style={{ position: "fixed", top: `${popoverPosition}px`, left: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: `${popoverPosition}px`,
+            left: "100px",
+          }}
+        >
           <CameraPopover />
         </div>
       )}
       {activePopover === "size" && (
-        <div style={{ position: "fixed", top: `${popoverPosition}px`, left: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: `${popoverPosition}px`,
+            left: "100px",
+          }}
+        >
           <SizePopover />
         </div>
       )}
       {activePopover === "flip" && (
-        <div style={{ position: "fixed", top: `${popoverPosition}px`, left: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: `${popoverPosition}px`,
+            left: "100px",
+          }}
+        >
           <FlipPopover />
         </div>
       )}
       {activePopover === "shape" && (
-        <div style={{ position: "fixed", top: `${popoverPosition}px`, left: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: `${popoverPosition}px`,
+            left: "100px",
+          }}
+        >
           <ShapePopover />
         </div>
       )}
       {activePopover === "filter" && (
-        <div style={{ position: "fixed", top: `${popoverPosition}px`, left: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: `${popoverPosition}px`,
+            left: "100px",
+          }}
+        >
           <FilterPopover />
         </div>
       )}
       {activePopover === "border" && (
-        <div style={{ position: "fixed", top: `${popoverPosition}px`, left: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: `${popoverPosition}px`,
+            left: "100px",
+          }}
+        >
           <BorderPopover />
         </div>
       )}

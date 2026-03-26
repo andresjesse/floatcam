@@ -20,4 +20,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   readConfig: () => ipcRenderer.invoke("get-config-file"),
   saveConfig: (attribute: keyof ConfigSchema, value: string) =>
     ipcRenderer.invoke("set-config-file", attribute, value),
+  hideConfigWindow: () => ipcRenderer.send("hide-config-window"),
 } as ElectronAPI);

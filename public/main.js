@@ -31,11 +31,6 @@ function createMainWindow() {
     win.loadURL(loadURL);
     win.removeMenu();
     win.setMenuBarVisibility(false);
-    win.on("show", () => {
-        setTimeout(() => {
-            win.minimize();
-        }, 500); // A 50ms buffer often solves OS-level race conditions
-    });
     return win;
 }
 function createCameraWindow() {
@@ -114,6 +109,11 @@ electron_1.app.whenReady().then(async () => {
             }
         }
         event.returnValue = true;
+    });
+    electron_1.ipcMain.on("hide-config-window", () => {
+        if (mainWindow) {
+            mainWindow.hide();
+        }
     });
     electron_1.app.on("activate", () => {
         if (electron_1.BrowserWindow.getAllWindows().length === 0) {
