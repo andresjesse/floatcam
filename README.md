@@ -29,3 +29,7 @@ git clone https://github.com/theterminalguy/floatcam.git && cd floatcam && yarn 
 ```
 
 To start the app, you'd need to run `yarn build && yarn start` and `yarn desktop` in two separate terminals.
+
+## Build for production
+
+`yarn make`, outputs packages to `out` folder.
