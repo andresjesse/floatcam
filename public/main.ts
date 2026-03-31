@@ -6,6 +6,7 @@ import {
   systemPreferences,
 } from "electron";
 import { ConfigSchema } from "../src/schemas/config";
+import { ca } from "zod/v4/locales";
 
 const os = require("os");
 const fs = require("fs").promises;
@@ -186,7 +187,13 @@ ipcMain.handle("set-config-file", async (_event, attribute, value) => {
   const filePath = path.join(app.getPath("home"), ".floatcam-config.json");
 
   try {
-    const fileContent = await fs.readFile(filePath, "utf-8");
+    let fileContent = "{}";
+
+    try {
+      fileContent = await fs.readFile(filePath, "utf-8");
+    } catch (error) {
+      // do nothing
+    }
 
     console.log("File content read:", fileContent);
 

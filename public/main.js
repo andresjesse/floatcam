@@ -145,7 +145,13 @@ electron_1.ipcMain.handle("get-config-file", async () => {
 electron_1.ipcMain.handle("set-config-file", async (_event, attribute, value) => {
     const filePath = path.join(electron_1.app.getPath("home"), ".floatcam-config.json");
     try {
-        const fileContent = await fs.readFile(filePath, "utf-8");
+        let fileContent = "{}";
+        try {
+            fileContent = await fs.readFile(filePath, "utf-8");
+        }
+        catch (error) {
+            // do nothing
+        }
         console.log("File content read:", fileContent);
         let data = config_1.ConfigSchema.parse(JSON.parse(fileContent));
         data[attribute] = value;
