@@ -1,5 +1,9 @@
 # Changelog "post-fork"
 
+**2026-03-30**
+
+- Fix: config file creation on first install.
+
 **2026-03-26**
 
 - Feat: camera configs are now loaded and saved in `~/.floatcam-config.json`. All confis are saved, except for default camera (use can switch cameras without crashing config).
